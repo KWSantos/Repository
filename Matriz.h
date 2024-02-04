@@ -28,6 +28,7 @@ public:
             cout << "b" << i+1 << ": ";
             cin >> *(bs+i);
         }
+        cout << endl;
     }
     void apresentaMatriz(){
         cout << "Matriz dos coeficientes: " << endl;
@@ -76,6 +77,7 @@ public:
             }
             bs[i] = (bs[i] - soma) / coeficientes[i * colunas + i];
         }
+        cout << "Solucao do sistema:" << endl;
         for(int i = 0; i<colunas; i++){
             cout << "x" << i+1 << ": " << bs[i] << endl;
         }
@@ -106,6 +108,7 @@ public:
                     escalonamento();
                     break;
             }
+            cout << endl;
         }
     }
 };
