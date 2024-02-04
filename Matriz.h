@@ -76,5 +76,36 @@ public:
             }
             bs[i] = (bs[i] - soma) / coeficientes[i * colunas + i];
         }
+        for(int i = 0; i<colunas; i++){
+            cout << "x" << i+1 << ": " << bs[i] << endl;
+        }
+        cout << endl;
+    }
+    void run(){
+        int op;
+        while(op!=7){
+            cout << "1 - Ler o sistema" << endl;
+            cout << "2 - Apresentar matriz dos coeficientes" << endl;
+            cout << "3 - Apresentar sistema completo" << endl;
+            cout << "4 - Resolver sistema por Eliminacao de Gauss" << endl;
+            cout << "5 - Resolver sistema por Cholesky" << endl;
+            cout << "6 - Resolver sistema por Gauss-Seidel" << endl;
+            cout << "7 - Sair" << endl;
+            cin >> op;
+            switch(op){
+                case 1:
+                    lerMatriz();
+                    break;
+                case 2:
+                    apresentaMatriz();
+                    break;
+                case 3:
+                    apresentaSistema();
+                    break;
+                case 4:
+                    escalonamento();
+                    break;
+            }
+        }
     }
 };

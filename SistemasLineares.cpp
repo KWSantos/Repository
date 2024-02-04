@@ -7,9 +7,5 @@ int main(){
     cout << "Digite n:";
     cin >> n;
     Matriz matriz(n, n);
-    matriz.lerMatriz();
-    matriz.apresentaMatriz();
-    matriz.apresentaSistema();
-    matriz.escalonamento();
-    matriz.apresentaSistema();
+    matriz.run();
 }
