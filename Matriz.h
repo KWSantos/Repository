@@ -21,14 +21,10 @@ public:
                 cout << "x" << j+1 << ":";
                 cin >> coeficientes[i * colunas + j];
             }
+            cout << "b" << i+1 << ":";
+            cin >> *(bs+i);
             cout << endl;
         }
-        cout << "Vetor b:" << endl;
-        for(int i = 0; i<linhas; i++){
-            cout << "b" << i+1 << ": ";
-            cin >> *(bs+i);
-        }
-        cout << endl;
     }
     void apresentaMatriz(){
         cout << "Matriz dos coeficientes: " << endl;
@@ -110,6 +106,7 @@ public:
             cout << "7 - Sair" << endl;
             cout << endl;
             cin >> op;
+            cout << endl;
             switch(op){
                 case 1:
                     lerMatriz();
