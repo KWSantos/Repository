@@ -55,14 +55,25 @@ public:
         }
         cout << endl;
     }
+    double calculaPivo(double a, double b){
+        if(b==0){
+            throw runtime_error("Sistema indeterminado");
+        }
+        return a / b;
+    }
     void escalonamento(){
         int j;
-        long double pivo;
+        double pivo;
         for(int i = 1; i<linhas; i++){
             int k = i;
             while(k!=linhas){
                 j = i - 1;
-                pivo = (coeficientes[k*colunas + j])/(coeficientes[(i-1)*colunas + j]);
+                try{
+
+                    pivo = calculaPivo(coeficientes[k*colunas + j],coeficientes[(i-1)*colunas + j]);
+                } catch(runtime_error& e){
+                    cout << e.what() << endl;
+                }
                 for(j = i-1; j<colunas; j++){
                     coeficientes[k*colunas + j] -= pivo*(coeficientes[(i-1)*colunas + j]);
                 }
@@ -75,7 +86,11 @@ public:
             for (int j = i + 1; j < colunas; j++) {
                 soma += coeficientes[i * colunas + j] * bs[j];
             }
-            bs[i] = (bs[i] - soma) / coeficientes[i * colunas + i];
+            try{
+                bs[i] = calculaPivo((bs[i] - soma), coeficientes[i * colunas + i]);
+            } catch(runtime_error& e){
+                cout << e.what() << endl;
+            }
         }
         cout << "Solucao do sistema:" << endl;
         for(int i = 0; i<colunas; i++){
@@ -93,6 +108,7 @@ public:
             cout << "5 - Resolver sistema por Cholesky" << endl;
             cout << "6 - Resolver sistema por Gauss-Seidel" << endl;
             cout << "7 - Sair" << endl;
+            cout << endl;
             cin >> op;
             switch(op){
                 case 1:
