@@ -26,6 +26,13 @@ public:
             cout << endl;
         }
     }
+    void limparSistema(){
+        for(int i = 0; i<linhas; i++){
+            for(int j = 0; j<colunas; j++){
+                coeficientes[i * colunas + j] = 0;
+            }
+        }
+    }
     void apresentaMatriz(){
         cout << "Matriz dos coeficientes: " << endl;
         for(int i = 0; i<linhas; i++){
@@ -51,15 +58,15 @@ public:
         }
         cout << endl;
     }
-    double calculaPivo(double a, double b){
-        if(b==0){
+    long double calculaPivo(long double a,long double b){
+        if(b<=0.00001 && b>=-0.00001){
             throw runtime_error("Sistema indeterminado");
         }
         return a / b;
     }
     void escalonamento(){
         int j;
-        double pivo;
+        long double pivo;
         for(int i = 1; i<linhas; i++){
             int k = i;
             while(k!=linhas){
