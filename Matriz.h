@@ -1,4 +1,6 @@
 #include <iostream>
+#include<iomanip>
+#include<cmath>
 using namespace std;
 
 class Matriz {
@@ -101,6 +103,73 @@ public:
         }
         cout << endl;
     }
+    int gaussSeidel(){
+        float a[linhas][colunas+1],x[linhas],aerr,maxerr=0,t,s,err;
+        int i,j,itr,maxitr;
+
+        for(i=0;i<linhas;i++){
+            for(j=0;j<colunas+1;j++){
+                if(j==colunas){
+                    a[i][j]=*(bs+i);
+                }
+                else{
+                    a[i][j]=coeficientes[i*colunas+j];
+                }
+            }
+        }
+        
+        std::cout<<"\nInsira o erro permitido e o numero maximo de iteracoes"<<endl;
+        std::cin>>aerr>>maxitr;
+        std::cout<<fixed;
+        std::cout<<"\nInsira as aproximacoes iniciais:\n";
+
+        for(i=0;i<linhas;i++){
+            std::cout<<"x"<<i<<":";
+            std::cin>>x[i];
+        }
+
+        std::cout<<"Iteracao"<<setw(6)<<"x[1]";
+        std::cout<<setw(11)<<"x[2]";
+        std::cout<<setw(11)<<"x[3]"<<endl;
+
+        for(itr=1;itr<=maxitr;itr++){
+            maxerr=0;
+            for(i=0;i<linhas;i++){
+                s=0;
+                for(j=0;j<linhas;j++)
+                    if(j != i) 
+                    s += a[i][j]*x[j];
+                    if(a[i][i]!=0){
+                        t=(a[i][linhas]-s)/a[i][i];
+                    }
+                    else{
+                        std::cout<<"Erro, divisao por 0"<<endl;
+                    }
+                    err=fabs(x[i]-t);
+
+                    if(err>maxerr)
+                    maxerr=err;
+
+                    x[i]=t;
+                }
+
+                std::cout<<setw(5)<<itr;
+                for(i=0;i<linhas;i++)
+                std::cout<<setw(11)<<setprecision(4)<<x[i];
+                std::cout<<endl;
+
+            if(maxerr<aerr){
+                std::cout<<"Convergiu em"<<setw(3)<<itr<<"iteracoes"<<endl;
+                for(i=0;i<linhas;i++){
+                    std::cout<<"x["<<i+1<<"]=";
+                    std::cout<<setw(7)<<setprecision(4)<<x[i]<<endl;
+                }
+                return -1;
+            }
+        }
+        std::cout<<"O numero maximo de iteracoes nao foi suficiente"<<endl;
+        return 1;
+    }
     void run(){
         int op;
         while(op!=7){
@@ -126,6 +195,9 @@ public:
                     break;
                 case 4:
                     escalonamento();
+                    break;
+                case 6:
+                    gaussSeidel();
                     break;
             }
             cout << endl;
