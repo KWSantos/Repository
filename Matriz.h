@@ -9,12 +9,14 @@ private:
     int colunas;
     long double *coeficientes;
     long double *bs;
+    long double *xs;
 public:
     Matriz(int l, int c){
         linhas = l;
         colunas = c;
         coeficientes = new long double[linhas * colunas];
         bs = new long double[linhas];
+        xs = new long double[linhas];
     }
     void lerMatriz(){
         for(int i = 0; i<linhas; i++){
@@ -66,40 +68,41 @@ public:
         }
         return a / b;
     }
-    void escalonamento(){
-        int j;
-        long double pivo;
-        for(int i = 1; i<linhas; i++){
-            int k = i;
-            while(k!=linhas){
-                j = i - 1;
-                try{
-
-                    pivo = calculaPivo(coeficientes[k*colunas + j],coeficientes[(i-1)*colunas + j]);
-                } catch(runtime_error& e){
+    void escalonamento() {
+        for (int i = 0; i < linhas - 1; i++) {
+            for (int k = i + 1; k < linhas; k++) {
+                long double pivo;
+                try {
+                    pivo = calculaPivo(coeficientes[k * colunas + i], coeficientes[i * colunas + i]);
+                } catch (runtime_error &e) {
                     cout << e.what() << endl;
+                    return;
                 }
-                for(j = i-1; j<colunas; j++){
-                    coeficientes[k*colunas + j] -= pivo*(coeficientes[(i-1)*colunas + j]);
+
+                for (int j = i; j < colunas; j++) {
+                    coeficientes[k * colunas + j] -= pivo * coeficientes[i * colunas + j];
                 }
-                *(bs + k) -= pivo*(*(bs + k - 1));
-                k++;
+                bs[k] -= pivo * bs[i];
             }
         }
+
         for (int i = linhas - 1; i >= 0; i--) {
             long double soma = 0;
             for (int j = i + 1; j < colunas; j++) {
-                soma += coeficientes[i * colunas + j] * bs[j];
+                soma += coeficientes[i * colunas + j] * xs[j];
             }
-            try{
-                bs[i] = calculaPivo((bs[i] - soma), coeficientes[i * colunas + i]);
-            } catch(runtime_error& e){
+
+            try {
+                xs[i] = calculaPivo(bs[i] - soma, coeficientes[i * colunas + i]);
+            } catch (runtime_error &e) {
                 cout << e.what() << endl;
+                return;
             }
         }
+
         cout << "Solucao do sistema:" << endl;
-        for(int i = 0; i<colunas; i++){
-            cout << "x" << i+1 << ": " << bs[i] << endl;
+        for (int i = 0; i < colunas; i++) {
+            cout << "x" << i + 1 << ": " << xs[i] << endl;
         }
         cout << endl;
     }
