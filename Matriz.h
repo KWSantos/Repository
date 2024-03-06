@@ -122,45 +122,82 @@ public:
         }
         cout << endl;
     }
-    void jacobi(double epsilon, int max_iter) {
-        int i, j, iter;
-        double* x = new double[colunas];
-        double* r = new double[colunas];
-        double* z = new double[colunas];
-        for (i = 0; i < colunas; i++) {
-            x[i] = 0.0;
+    void Jacobi(int maxIterations) {
+        double *xs = new double[colunas]; // Vetor de soluções
+        double *xAnterior = new double[colunas];
+        double TOLERANCE;
+        cout << "Insira as aproximacoes iniciais:";
+        cin >> TOLERANCE;
+
+        // Inicializa as soluções
+        for (int i = 0; i < colunas; i++) {
+            xs[i] = 0.0;
         }
-        for (iter = 0; iter < max_iter; iter++) {
-            for (i = 0; i < linhas; i++) {
-                z[i] = bs[i];
-                for (j = 0; j < colunas; j++) {
-                    if (i != j) {
-                        z[i] -= coeficientes[i*colunas + j] * x[j];
+
+        for (int iteration = 0; iteration < maxIterations; iteration++) {
+            // Copia as soluções da iteração anterior
+            for (int i = 0; i < colunas; i++) {
+                xAnterior[i] = xs[i];
+            }
+
+            // Pivoteamento de linhas
+            for (int i = 0; i < linhas; i++) {
+                int max_index = i;
+                double max_value = abs(coeficientes[i * colunas + i]);
+                for (int j = i + 1; j < colunas; j++) {
+                    double value = abs(coeficientes[j * colunas + i]);
+                    if (value > max_value) {
+                        max_index = j;
+                        max_value = value;
                     }
                 }
-                z[i] /= coeficientes[i*colunas + i];
+                if (max_index != i) {
+                    // Trocar as linhas
+                    for (int k = 0; k < colunas; k++) {
+                        swap(coeficientes[i * colunas + k], coeficientes[max_index * colunas + k]);
+                    }
+                    swap(bs[i], bs[max_index]);
+                }
             }
-            bool converged = true;
-            for (i = 0; i < colunas; i++) {
-                r[i] = fabs(z[i] - x[i]);
-                if (r[i] > epsilon) {
-                    converged = false;
+
+            for (int i = 0; i < linhas; i++) {
+                double soma = 0.0;
+                for (int j = 0; j < colunas; j++) {
+                    if (j != i) {
+                        soma += coeficientes[i * colunas + j] * xAnterior[j];
+                    }
+                }
+
+                try {
+                    xs[i] = calculaPivo(bs[i] - soma, coeficientes[i * colunas + i]);
+                } catch (runtime_error &e) {
+                    cout << e.what() << endl;
+                    return;
+                }
+            }
+
+            // Verifica a convergência
+            bool convergiu = true;
+            for (int i = 0; i < colunas; i++) {
+                if (abs(xs[i] - xAnterior[i]) > TOLERANCE) {
+                    convergiu = false;
                     break;
                 }
             }
 
-            if (converged) {
+            if (convergiu) {
+                cout << "Convergencia alcancada apos " << iteration + 1 << " iteracoes." << endl;
                 break;
             }
-            for (i = 0; i < colunas; i++) {
-                x[i] = z[i];
-            }
         }
+
         cout << "Solucao do sistema:" << endl;
-        for(int i = 0; i<colunas; i++){
-            cout << "x" << i+1 << ": " << x[i] << endl;
+        for (int i = 0; i < colunas; i++) {
+            cout << "x" << i + 1 << ": " << xs[i] << endl;
         }
     }
+
+
     int gaussSeidel(){
         float a[linhas][colunas+1],x[linhas],aerr,maxerr=0,t,s,err;
         int i,j,itr,maxitr;
@@ -256,7 +293,7 @@ public:
                     escalonamento();
                     break;
                 case 5:
-                    jacobi(0.05, 100);
+                    Jacobi(100);
                     break;
                 case 6:
                     gaussSeidel();
