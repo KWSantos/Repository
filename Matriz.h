@@ -71,6 +71,22 @@ public:
     void escalonamento() {
         for (int i = 0; i < linhas - 1; i++) {
             for (int k = i + 1; k < linhas; k++) {
+                if (coeficientes[i * colunas + i] == 0) {
+                    for (int j = i + 1; j < linhas; j++) {
+                        if (coeficientes[j * colunas + i] != 0) {
+                            for (int l = 0; l < colunas; l++) {
+                                swap(coeficientes[i * colunas + l], coeficientes[j * colunas + l]);
+                            }
+                            swap(bs[i], bs[j]);
+                            break;
+                        }
+                    }
+                }
+                if (coeficientes[i * colunas + i] == 0) {
+                    cout << "Sistema singular. Não é possível prosseguir com o escalonamento." << endl;
+                    return;
+                }
+
                 long double pivo;
                 try {
                     pivo = calculaPivo(coeficientes[k * colunas + i], coeficientes[i * colunas + i]);
@@ -105,6 +121,45 @@ public:
             cout << "x" << i + 1 << ": " << xs[i] << endl;
         }
         cout << endl;
+    }
+    void jacobi(double epsilon, int max_iter) {
+        int i, j, iter;
+        double* x = new double[colunas];
+        double* r = new double[colunas];
+        double* z = new double[colunas];
+        for (i = 0; i < colunas; i++) {
+            x[i] = 0.0;
+        }
+        for (iter = 0; iter < max_iter; iter++) {
+            for (i = 0; i < linhas; i++) {
+                z[i] = bs[i];
+                for (j = 0; j < colunas; j++) {
+                    if (i != j) {
+                        z[i] -= coeficientes[i*colunas + j] * x[j];
+                    }
+                }
+                z[i] /= coeficientes[i*colunas + i];
+            }
+            bool converged = true;
+            for (i = 0; i < colunas; i++) {
+                r[i] = fabs(z[i] - x[i]);
+                if (r[i] > epsilon) {
+                    converged = false;
+                    break;
+                }
+            }
+
+            if (converged) {
+                break;
+            }
+            for (i = 0; i < colunas; i++) {
+                x[i] = z[i];
+            }
+        }
+        cout << "Solucao do sistema:" << endl;
+        for(int i = 0; i<colunas; i++){
+            cout << "x" << i+1 << ": " << x[i] << endl;
+        }
     }
     int gaussSeidel(){
         float a[linhas][colunas+1],x[linhas],aerr,maxerr=0,t,s,err;
@@ -175,14 +230,15 @@ public:
     }
     void run(){
         int op;
-        while(op!=7){
+        while(op!=8){
             cout << "1 - Ler o sistema" << endl;
             cout << "2 - Apresentar matriz dos coeficientes" << endl;
             cout << "3 - Apresentar sistema completo" << endl;
             cout << "4 - Resolver sistema por Eliminacao de Gauss" << endl;
-            cout << "5 - Resolver sistema por Cholesky" << endl;
+            cout << "5 - Resolver sistema por Gauss-Jacobi" << endl;
             cout << "6 - Resolver sistema por Gauss-Seidel" << endl;
-            cout << "7 - Sair" << endl;
+            cout << "7 - Limpar sistema" << endl;
+            cout << "8 - Sair" << endl;
             cout << endl;
             cin >> op;
             cout << endl;
@@ -199,8 +255,14 @@ public:
                 case 4:
                     escalonamento();
                     break;
+                case 5:
+                    jacobi(0.05, 100);
+                    break;
                 case 6:
                     gaussSeidel();
+                    break;
+                case 7:
+                    limparSistema();
                     break;
             }
             cout << endl;
